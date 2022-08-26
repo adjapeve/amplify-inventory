@@ -71,6 +71,20 @@ const App = () => {
       console.log("error deleting Product");
     }
   }
+  async function editProduct(currentProduct, e) {
+    e.preventDefault();
+    setFormState(currentProduct);
+    const editData = { ...formState, id: currentProduct.id };
+    try {
+      const resultEdit = await API.graphql(
+        graphqlOperation(updateProduct, {
+          input: editData,
+        })
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   return (
     <div>
@@ -129,7 +143,7 @@ const App = () => {
             </button>
             <button
               onClick={(event) => {
-                updateProduct(product, event);
+                editProduct(product, event);
               }}
             >
               Edit
