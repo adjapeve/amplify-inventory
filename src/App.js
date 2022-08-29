@@ -171,6 +171,7 @@ const App = () => {
               <TableCell>Price</TableCell>
               <TableCell>Size</TableCell>
               <TableCell>Color</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -192,10 +193,8 @@ const App = () => {
                   >
                     <Delete />
                   </IconButton>
-                </TableCell>
-                {/* when editing, an array is created only with the data needed for the update API call as the fetch query 
-            brings fields that are not needed e.g (createdAt) when updating and generate errors */}
-                <TableCell>
+                  {/* when editing, an array is created only with the data needed for the update API call as the fetch query 
+              brings fields that are not needed e.g (createdAt) when updating and generate errors */}
                   <IconButton
                     aria-label="edit"
                     type="button"
