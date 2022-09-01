@@ -66,7 +66,6 @@ const Form = ({
             margin="dense"
             onChange={(event) => handleUpdateInput("size", event.target.value)}
             value={formData.size}
-            required
           />
         </Grid>
         <Grid item xs={12} sm={6} lg={4}>
@@ -77,7 +76,6 @@ const Form = ({
             margin="dense"
             onChange={(event) => handleUpdateInput("color", event.target.value)}
             value={formData.color}
-            required
           />
         </Grid>
         <Grid item xs={12} sm={6} lg={4}>
