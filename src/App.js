@@ -36,7 +36,7 @@ const App = () => {
       const resultFetch = await API.graphql(graphqlOperation(listProducts));
       setProducts(resultFetch.data.listProducts.items);
     } catch (err) {
-      console.log("error fetching Products");
+      console.log(err.errors[0].message);
     }
   }
   async function addProduct(e) {
@@ -71,7 +71,7 @@ const App = () => {
       );
       fetchProducts();
     } catch (err) {
-      console.log("error deleting Product");
+      console.log(err.errors[0].message);
     }
   }
   async function editProduct(e) {
@@ -88,7 +88,7 @@ const App = () => {
       fetchProducts();
       setFormState(initialState);
     } catch (err) {
-      console.log(err);
+      console.log(err.errors[0].message);
     }
   }
 
