@@ -1,5 +1,7 @@
 /* src/App.js */
 import React, { useEffect, useState } from "react";
+import { Container } from "@mui/material";
+
 import { Amplify, API, graphqlOperation } from "aws-amplify";
 import {
   createProduct,
@@ -8,6 +10,8 @@ import {
 } from "./graphql/mutations";
 import { listProducts } from "./graphql/queries";
 import awsExports from "./aws-exports";
+import Form from "./components/Form";
+import ProductsTable from "./components/ProductsTable";
 Amplify.configure(awsExports);
 const initialState = {
   name: "",
@@ -32,7 +36,7 @@ const App = () => {
       const resultFetch = await API.graphql(graphqlOperation(listProducts));
       setProducts(resultFetch.data.listProducts.items);
     } catch (err) {
-      console.log("error fetching Products");
+      console.log(err.errors[0].message);
     }
   }
   async function addProduct(e) {
@@ -46,7 +50,7 @@ const App = () => {
       const product = resultCreate.data.createProduct;
       setProducts([...products, product]);
       console.log(
-        `Product added with ID: ${resultCreate.data.createProduct.id}`
+        `A product has been created with ID: ${resultCreate.data.createProduct.id}`
       );
       setFormState(initialState);
     } catch (err) {
@@ -54,7 +58,6 @@ const App = () => {
     }
   }
   async function removeProduct(id, e) {
-    e.preventDefault();
     try {
       const resultDelete = await API.graphql(
         graphqlOperation(deleteProduct, {
@@ -64,80 +67,47 @@ const App = () => {
         })
       );
       console.log(
-        `Product with ID: ${resultDelete.data.deleteProduct.id} has been deleted`
+        `The product with ID: ${resultDelete.data.deleteProduct.id} has been deleted`
       );
       fetchProducts();
     } catch (err) {
-      console.log("error deleting Product");
+      console.log(err.errors[0].message);
+    }
+  }
+  async function editProduct(e) {
+    e.preventDefault();
+    try {
+      const resultEdit = await API.graphql(
+        graphqlOperation(updateProduct, {
+          input: formState,
+        })
+      );
+      console.log(
+        `The product with ID: ${resultEdit.data.updateProduct.id} has been updated`
+      );
+      fetchProducts();
+      setFormState(initialState);
+    } catch (err) {
+      console.log(err.errors[0].message);
     }
   }
 
   return (
-    <div>
-      <form>
-        <label htmlFor="name">Name</label>
-        <input
-          type="text"
-          id="name"
-          onChange={(event) => setInput("name", event.target.value)}
-          value={formState.name}
-        ></input>
-        <label htmlFor="description">Description</label>
-        <input
-          type="text"
-          id="description"
-          onChange={(event) => setInput("description", event.target.value)}
-          value={formState.description}
-        ></input>
-        <label htmlFor="price">Price</label>
-        <input
-          type="number"
-          id="price"
-          onChange={(event) => setInput("price", event.target.value)}
-          value={formState.price}
-        ></input>
-        <label htmlFor="size">Size</label>
-        <input
-          type="text"
-          id="size"
-          onChange={(event) => setInput("size", event.target.value)}
-          value={formState.size}
-        ></input>
-        <label htmlFor="color">Color</label>
-        <input
-          type="text"
-          id="color"
-          onChange={(event) => setInput("color", event.target.value)}
-          value={formState.color}
-        ></input>
-        <button onClick={addProduct}>Add product</button>
-      </form>
-      <div>
-        {products.map((product, index) => (
-          <div key={product.id ? product.id : index}>
-            <p>{product.id}</p>
-            <p>{product.description}</p>
-            <p>{product.price}</p>
-            <p>{product.size}</p>
-            <p>{product.color}</p>
-            <button
-              onClick={(event) => {
-                removeProduct(product.id, event);
-              }}
-            >
-              Delete
-            </button>
-            <button
-              onClick={(event) => {
-                updateProduct(product, event);
-              }}
-            >
-              Edit
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
+    <Container maxWidth="lg" sx={{ p: 2 }}>
+      <Form
+        formData={formState}
+        updateForm={setFormState}
+        editProduct={editProduct}
+        addProduct={addProduct}
+        updateInput={setInput}
+        initialState={initialState}
+      />
+      <ProductsTable
+        existentProducts={products}
+        removeProduct={removeProduct}
+        updateForm={setFormState}
+      />
+    </Container>
   );
 };
 
